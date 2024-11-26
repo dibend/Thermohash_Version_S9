@@ -93,13 +93,13 @@ Automate the script to run periodically for continuous tuning.
    crontab -e
    ```
 
-2. Add an entry to execute the script (e.g., every hour):
+2. Add an entry to execute the script every 3 hours:
    ```bash
-   0 * * * * python3 /path/to/thermohash_version_s9.py
+   0 */3 * * * python3 /path/to/thermohash_version_s9.py
    ```
 
    **Explanation:**
-   - `0 * * * *`: Runs at the start of every hour.
+   - `0 */3 * * *`: Runs the script every 3 hours, starting at midnight.
    - Replace `/path/to/thermohash_version_s9.py` with the absolute path to the script.
 
 3. Save and exit. The cron job will now run at the specified interval.
