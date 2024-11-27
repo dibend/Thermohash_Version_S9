@@ -5,8 +5,12 @@ from pathlib import Path
 import configparser
 import subprocess
 import os
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
+
+# Mount the img directory for serving images
+app.mount("/img", StaticFiles(directory="img"), name="img")
 
 # Load configuration
 config = configparser.ConfigParser()
