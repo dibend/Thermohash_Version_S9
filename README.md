@@ -25,8 +25,8 @@ sudo apt install python3 python3-pip python3-fastapi python3-jinja2 uvicorn -y
 
 ### 2. Set Up Configuration Files
 
-#### **a. Parent Directory Configuration**
-Create a `config.ini` file in the **parent directory** for Thermohash Version S9:
+#### **a. Thermohash Version S9 directory**
+Create a `config.ini` file in the **Thermohash Version S9 directory** for Thermohash Version S9:
 ```ini
 [miner]
 hostname = your-miner-hostname-or-ip
