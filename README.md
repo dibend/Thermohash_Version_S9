@@ -95,12 +95,13 @@ Automate the script to run periodically for continuous tuning.
 
 2. Add an entry to execute the script every 3 hours:
    ```bash
-   0 */3 * * * python3 /path/to/thermohash_version_s9.py
+   0 * * * * python3 /path/to/thermohash_version_s9.py >> /path/to/logfile.txt 2>&1
    ```
 
    **Explanation:**
-   - `0 */3 * * *`: Runs the script every 3 hours, starting at midnight.
+   - `0 * * * *`: Runs the script every hour.
    - Replace `/path/to/thermohash_version_s9.py` with the absolute path to the script.
+   - Replace `/path/to/logfile.txt` with the absolute path to the desired logfile location and name.
 
 3. Save and exit. The cron job will now run at the specified interval.
 
