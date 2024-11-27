@@ -8,9 +8,9 @@ A FastAPI-based production-grade web server for managing and monitoring Thermoha
 ---
 
 ## Features
-- **Log Viewer**: Displays the Thermohash log (`/home/david/Desktop/s9.out`) in a browser-friendly format.
-- **Run Script**: Provides a button to execute the Thermohash script (`/home/david/ThermohashVs9/thermohash_version_s9.py`) and appends the output to the log.
-- **Configurable**: Uses a `config.ini` file to define paths for the log file and script.
+- **Log Viewer**: Displays the Thermohash log in a browser-friendly format.
+- **Run Script**: Provides a button to execute the Thermohash script and appends the output to the log.
+- **Configurable**: Uses `config.ini` files for path configuration.
 
 ---
 
@@ -23,22 +23,39 @@ sudo apt update
 sudo apt install python3 python3-pip python3-fastapi python3-jinja2 uvicorn -y
 ```
 
-### 2. Verify Installation
+### 2. Set Up Configuration Files
+
+#### **a. Parent Directory Configuration**
+Create a `config.ini` file in the **parent directory** for Thermohash Version S9:
+```ini
+[miner]
+hostname = your-miner-hostname-or-ip
+root_password = your-root-password
+
+[temperature]
+default_power_target = 750
+temp_to_power_mapping = {"30": 450, "20": 550, "10": 650, "0": 750}
+```
+
+- Replace `your-miner-hostname-or-ip` and `your-root-password` with the actual hostname/IP and SSH password for your miner.
+- Adjust the `temp_to_power_mapping` dictionary as needed based on your environmental and operational conditions.
+
+#### **b. Web Server Configuration**
+Create a `config.ini` file in the **web server directory**:
+```ini
+[paths]
+log_file = /path/to/your/log/file.log
+script_path = /path/to/your/thermohash_script.py
+```
+
+- Replace the placeholders `/path/to/your/log/file.log` and `/path/to/your/thermohash_script.py` with your actual paths for the log file and Thermohash script.
+
+### 3. Verify Installation
 Check that all dependencies are installed correctly:
 ```bash
 uvicorn --help           # Check Uvicorn availability
 python3 -m fastapi --help  # Check FastAPI availability
 ```
-
-### 3. Configure Paths
-Edit the `config.ini` file to point to your specific paths:
-```ini
-[paths]
-log_file = /home/david/Desktop/s9.out
-script_path = /home/david/ThermohashVs9/thermohash_version_s9.py
-```
-
-Replace `/home/david/Desktop/s9.out` and `/home/david/ThermohashVs9/thermohash_version_s9.py` with your actual file paths if they are different.
 
 ---
 
@@ -50,6 +67,65 @@ uvicorn web_server:app --host 0.0.0.0 --port 8000
 
 - Open your browser and navigate to `http://localhost:8000`.
 - To access the server over a network, use your machine’s IP address (e.g., `http://192.168.1.100:8000`).
+
+---
+
+## Setting Up Cron Jobs
+
+Automate the execution of the Thermohash script with a cron job:
+
+1. Open the crontab editor:
+   ```bash
+   crontab -e
+   ```
+
+2. Add an entry to execute the script periodically (e.g., every 3 hours):
+   ```bash
+   0 */3 * * * python3 /path/to/your/thermohash_script.py >> /path/to/your/log/file.log 2>&1
+   ```
+
+3. Save and exit. The script will now execute every 3 hours, appending its output to the log file.
+
+---
+
+## Setting Up the Web Server as a Service
+
+Run the web server automatically on boot using `systemd`:
+
+1. Create a new service file:
+   ```bash
+   sudo nano /etc/systemd/system/thermohash_web.service
+   ```
+
+2. Add the following content:
+   ```ini
+   [Unit]
+   Description=Thermohash Version S9 Web Server
+   After=network.target
+
+   [Service]
+   User=your-username
+   WorkingDirectory=/path/to/your/web_server
+   ExecStart=/usr/bin/uvicorn web_server:app --host 0.0.0.0 --port 8000
+   Restart=always
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+   Replace `your-username` with your Linux username and `/path/to/your/web_server` with the full path to your web server directory.
+
+3. Enable and start the service:
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable thermohash_web.service
+   sudo systemctl start thermohash_web.service
+   ```
+
+4. Verify the service is running:
+   ```bash
+   sudo systemctl status thermohash_web.service
+   ```
 
 ---
 
@@ -69,8 +145,8 @@ thermohash_web_server/
 1. **Permission Issues**:
    Ensure the log file and script have the necessary permissions:
    ```bash
-   chmod +rw /home/david/Desktop/s9.out
-   chmod +x /home/david/ThermohashVs9/thermohash_version_s9.py
+   chmod +rw /path/to/your/log/file.log
+   chmod +x /path/to/your/thermohash_script.py
    ```
 
 2. **Firewall Rules**:
