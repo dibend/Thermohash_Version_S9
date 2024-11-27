@@ -24,23 +24,42 @@ temp_to_power_mapping = json.loads(config.get("temperature", "temp_to_power_mapp
 CACHE_FILE = os.path.join(script_dir, "geolocation_cache.json")
 POWER_TARGET_FILE = os.path.join(script_dir, "last_power_target.json")
 
-# Get geolocation (cached)
 def get_geolocation():
+    """
+    Fetches geolocation data using ip-api.com. Caches the result locally to avoid redundant API calls.
+    Returns:
+        tuple: (latitude, longitude) if successful, otherwise (None, None)
+    """
+    # Check if cache exists
     if os.path.exists(CACHE_FILE):
-        with open(CACHE_FILE, "r") as f:
-            data = json.load(f)
-            print("Using cached geolocation.")
-            return data["lat"], data["lon"]
+        try:
+            with open(CACHE_FILE, "r") as f:
+                cached_data = json.load(f)
+                print("Using cached geolocation.")
+                return cached_data["lat"], cached_data["lon"]
+        except Exception as e:
+            print(f"Error reading geolocation cache: {e}")
+            # Proceed to fetch fresh data if cache is invalid
 
+    # Fetch fresh geolocation data
+    GEOLOCATION_API_URL = "http://ip-api.com/json/"
     try:
-        response = requests.get("https://ipinfo.io/json")
+        response = requests.get(GEOLOCATION_API_URL)
         response.raise_for_status()
         data = response.json()
-        lat, lon = map(float, data["loc"].split(","))
-        with open(CACHE_FILE, "w") as f:
-            json.dump({"lat": lat, "lon": lon}, f)
-        print("Geolocation fetched and cached.")
-        return lat, lon
+
+        if data["status"] == "success":
+            lat, lon = data["lat"], data["lon"]
+            print(f"Geolocation fetched: Latitude {lat}, Longitude {lon}")
+
+            # Save to cache
+            with open(CACHE_FILE, "w") as f:
+                json.dump({"lat": lat, "lon": lon}, f)
+
+            return lat, lon
+        else:
+            print(f"Geolocation API error: {data.get('message', 'Unknown error')}")
+            return None, None
     except Exception as e:
         print(f"Error fetching geolocation: {e}")
         return None, None
