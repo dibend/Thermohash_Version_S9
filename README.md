@@ -1,4 +1,5 @@
-
+<img src="https://njweb.solutions/img/20241209_123622.jpg" width="90%"><b
+r>
 # Thermohash Version S9 Web Server
 
 A FastAPI-based production-grade web server for managing and monitoring Thermohash Version S9. This server allows users to:
