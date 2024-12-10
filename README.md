@@ -1,6 +1,6 @@
 <img src="https://njweb.solutions/img/thermohash_version_s9_logo.gif" width="90%"><b
 r>
-# Thermohash Version S9 Web Server
+# Thermohash Version S9
 
 A FastAPI-based production-grade web server for managing and monitoring Thermohash Version S9. This server allows users to:
 - View the Thermohash log file in a web browser.
