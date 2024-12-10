@@ -1,4 +1,4 @@
-<img src="https://njweb.solutions/img/ThermoHashLogo.gif" width="90%"><b
+<img src="https://njweb.solutions/img/thermohash_version_s9_logo.gif" width="90%"><b
 r>
 # Thermohash Version S9 Web Server
 
