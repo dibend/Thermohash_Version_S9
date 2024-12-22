@@ -17,7 +17,6 @@ hostname = config.get("miner", "hostname")
 root_password = config.get("miner", "root_password")
 
 # Temperature and power settings
-default_power_target = int(config.get("temperature", "default_power_target"))
 temp_to_power_mapping = json.loads(config.get("temperature", "temp_to_power_mapping"))
 
 # File to cache geolocation and last known power target
@@ -76,12 +75,38 @@ def get_outdoor_temperature(lat, lon):
         print(f"Error fetching outdoor temperature: {e}")
         return None
 
-# Determine the power target based on temperature
-def determine_power_target(temp, mapping, default):
-    for t, power in sorted(mapping.items(), key=lambda x: int(x[0]), reverse=True):
-        if temp >= int(t):
-            return power
-    return default
+def determine_power_target(temp, mapping):
+    """
+    Determine the power target based on temperature.
+
+    Args:
+        temp (int): Current temperature.
+        mapping (dict): A dictionary where keys are temperature thresholds (str) 
+                        and values are power targets (int).
+
+    Returns:
+        int: The power target corresponding to the temperature.
+    """
+    # Convert mapping keys to integers and sort in ascending order
+    sorted_mapping = sorted((int(k), v) for k, v in mapping.items())
+
+    # If temperature is below the lowest threshold, use the lowest power
+    if temp < sorted_mapping[0][0]:
+        return sorted_mapping[0][1]
+
+    # If temperature is above the highest threshold, use the highest power
+    if temp > sorted_mapping[-1][0]:
+        return sorted_mapping[-1][1]
+
+    # Handle in-between temperatures
+    for i in range(len(sorted_mapping) - 1):
+        lower_temp, lower_power = sorted_mapping[i]
+        upper_temp, upper_power = sorted_mapping[i + 1]
+        if lower_temp <= temp <= upper_temp:
+            # Interpolate power between thresholds
+            temp_range = upper_temp - lower_temp
+            power_range = upper_power - lower_power
+            return lower_power + (temp - lower_temp) * power_range // temp_range
 
 # Load the last known power target
 def load_last_power_target():
@@ -129,7 +154,7 @@ def main():
     print(f"Current outdoor temperature: {temperature}°C")
 
     # Determine the power target
-    power_target = determine_power_target(temperature, temp_to_power_mapping, default_power_target)
+    power_target = determine_power_target(temperature, temp_to_power_mapping)
     print(f"Determined power target: {power_target}W")
 
     # Load last known power target
