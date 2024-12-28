@@ -75,38 +75,27 @@ def get_outdoor_temperature(lat, lon):
         print(f"Error fetching outdoor temperature: {e}")
         return None
 
-def determine_power_target(temp, mapping):
+def determine_power_target(current_temperature, temp_to_power_mapping):
     """
-    Determine the power target based on temperature.
+    Adjusts the wattage based on the current temperature and the config mapping.
+    Reads thresholds and corresponding wattage strictly from the configuration.
 
     Args:
-        temp (int): Current temperature.
-        mapping (dict): A dictionary where keys are temperature thresholds (str) 
-                        and values are power targets (int).
+        current_temperature (float): The current temperature.
+        temp_to_power_mapping (dict): A dictionary mapping temperature thresholds to wattage values.
 
     Returns:
-        int: The power target corresponding to the temperature.
+        int: The adjusted wattage.
     """
-    # Convert mapping keys to integers and sort in ascending order
-    sorted_mapping = sorted((int(k), v) for k, v in mapping.items())
-
-    # If temperature is below the lowest threshold, use the lowest power
-    if temp < sorted_mapping[0][0]:
-        return sorted_mapping[0][1]
-
-    # If temperature is above the highest threshold, use the highest power
-    if temp > sorted_mapping[-1][0]:
-        return sorted_mapping[-1][1]
-
-    # Handle in-between temperatures
-    for i in range(len(sorted_mapping) - 1):
-        lower_temp, lower_power = sorted_mapping[i]
-        upper_temp, upper_power = sorted_mapping[i + 1]
-        if lower_temp <= temp <= upper_temp:
-            # Interpolate power between thresholds
-            temp_range = upper_temp - lower_temp
-            power_range = upper_power - lower_power
-            return lower_power + (temp - lower_temp) * power_range // temp_range
+    # Ensure the mapping is sorted by temperature thresholds
+    sorted_mapping = sorted(temp_to_power_mapping.items(), key=lambda x: float(x[0]))
+    
+    for temp_threshold, wattage in sorted_mapping:
+        if current_temperature <= float(temp_threshold):
+            return wattage  # Return the wattage for the matching threshold
+    
+    # If the temperature exceeds all thresholds, return the highest wattage
+    return sorted_mapping[-1][1]
 
 # Load the last known power target
 def load_last_power_target():
