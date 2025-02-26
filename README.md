@@ -172,3 +172,10 @@ thermohash_web_server/
 ---
 
 Thermohash Version S9 Web Server makes it easy to manage and monitor your mining operations efficiently.
+
+## Additional Resources
+
+- [S9 Bitcoin Space Heater Case](https://www.cryptocloaks.com/product/s9-space-heater-case-bitcoin/?srsltid=AfmBOoqL8NSlcea_XeDVuXM0SWU52W-bcEsdmaM37WsZhYx4Lo3qTSk6)
+- [The Future of Space Heaters: A Bitcoin ASIC Build](https://www.cryptocloaks.com/the-future-of-space-heaters-s9-bitcoin-asic/?srsltid=AfmBOop71RDiPaTOjFqDfBs4psvR06L-8d0M4caqBR3oORT8iZ8Qsvjh)
+
+![S9 Bitcoin Space Heater Case](https://i0.wp.com/www.cryptocloaks.com/wp-content/uploads/2024/01/IMG_20230130_201457_904.jpg?w=576&ssl=1)
